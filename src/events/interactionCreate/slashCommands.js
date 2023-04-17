@@ -17,62 +17,62 @@ module.exports = {
   async execute(interaction, client) {
     if (!interaction.isChatInputCommand()) return;
 
-    try {
-      const command = await client.commands.get(interaction.commandName);
+    const command = await client.commands.get(interaction.commandName);
 
-      if (!command) {
+    if (!command) {
+      interaction.reply({
+        content: "This command isn't available.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (command.devOnly) {
+      if (!devs.includes(interaction.member.id)) {
         interaction.reply({
-          content: "This command isn't available.",
+          content: "Only developers are allowed to run this command.",
           ephemeral: true,
         });
         return;
       }
+    }
 
-      if (command.devOnly) {
-        if (!devs.includes(interaction.member.id)) {
+    if (command.testOnly) {
+      if (!(interaction.guild.id === testServer)) {
+        interaction.reply({
+          content: "This command cannot be ran here.",
+          ephemeral: true,
+        });
+        return;
+      }
+    }
+
+    if (command.permissionsRequired?.length) {
+      for (const permission of command.permissionsRequired) {
+        if (!interaction.member.permissions.has(permission)) {
           interaction.reply({
-            content: "Only developers are allowed to run this command.",
+            content: `You need \`${permission}\` permission to use this command.`,
             ephemeral: true,
           });
           return;
         }
       }
+    }
+    if (command.botPermissions?.length) {
+      const bot = interaction.guild.members.me;
 
-      if (command.testOnly) {
-        if (!(interaction.guild.id === testServer)) {
+      for (const permission of command.botPermissions) {
+        if (!bot.permissions.has(permission)) {
           interaction.reply({
-            content: "This command cannot be ran here.",
+            content: `I need \`${permission}\` permission to execute this command.`,
             ephemeral: true,
           });
           return;
         }
       }
+    }
 
-      if (command.permissionsRequired?.length) {
-        for (const permission of command.permissionsRequired) {
-          if (!interaction.member.permissions.has(permission)) {
-            interaction.reply({
-              content: `You need \`${permission}\` permission to use this command.`,
-              ephemeral: true,
-            });
-            return;
-          }
-        }
-      }
-      if (command.botPermissions?.length) {
-        const bot = interaction.guild.members.me;
-
-        for (const permission of command.botPermissions) {
-          if (!bot.permissions.has(permission)) {
-            interaction.reply({
-              content: `I need \`${permission}\` permission to execute this command.`,
-              ephemeral: true,
-            });
-            return;
-          }
-        }
-      }
-
+    try {
       await command.execute(interaction, client);
     } catch (error) {
       interaction.reply({
