@@ -7,24 +7,15 @@
 		"paths": {
 			"@root/*": ["./*"],
 			"@src/*": ["./src/*"],
+			"@db/*": ["./src/db/*"],
 			"@lib/*": ["./src/lib/*"],
-			"@config/*": [
-				"src/data/config/*"
-			],
-			"@structures/*": ["./src/structures/*"],
-			"@handlers/*": ["./src/handlers/*"],
-			"@commands/*": ["./src/commands/*"],
-			"@assets/*": ["./src/assets/*"],
+			"@types/*": ["./src/types/*"],
+			"@utils/*": ["./src/utils/*"],
 			"@events/*": ["./src/events/*"],
-			"@utils/*": [
-				"./src/utils/*"
-			],
-			"@db/*": [
-				"src/db/*"
-			],
-			"@data": [
-				"./src/data/*"
-			]
+			"@assets/*": ["./src/assets/*"],
+			"@helpers/*": ["./src/helpers/*"],
+			"@handlers/*": ["./src/handlers/*"],
+			"@commands/*": ["./src/commands/*"]
 		}
 	},
 	"exclude": ["node_modules"]
