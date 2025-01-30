@@ -1,25 +1,46 @@
-[![CodeQL](https://github.com/deleteduser/Node/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/deleteduser/Node/actions/workflows/codeql.yml)
-[![Dependency Review](https://github.com/deleteduser/Node/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/deleteduser/Node/actions/workflows/dependency-review.yml)
+# ‼️No Frequent Updates For Next Few Months‼️
 
-# NODE
+![Node](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=175&section=header&text=NODE&fontSize=80&fontAlignY=35&animation=twinkling&fontColor=gradient)
 
-**Node** is a multipurpose discord Bot. Specially made for _Moderation_ & _Server-Management_. It was made with [discord.js](https://github.com/discordjs/discord.js) which is a powerful [**Node.js**](https://nodejs.org/en/) module that allows you to easily interact with the [Discord API](https://discord.com/developers/docs/intro).
+[![Version][version-shield]][version-shield-link]
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
 
-## Road Map
+[![MIT License][license-shield]][license-url]
+[![CodeQL][codeql]][codeql-url]
+[![Dependency Review][dependency-review]][dependency-review-url]
+[![CodeFactor][code-factor]][code-factor-url]
 
-> **DROPPED**. _This project is no longer in development and dropped. There won't be any new releases._
+## Introduction
+
+[![Invite Node](./public/assets/profile.png)](https://discord.com/oauth2/authorize?client_id=1030698369435320350)
+
+**Node** is a multipurpose Discord bot, specially made for **Moderation** & **Server-Management**. It is built with [discord.js](https://github.com/discordjs/discord.js), a powerful [Node.js](https://nodejs.org) module that allows you to easily interact with the [Discord API](https://discord.com/developers/docs/intro).
+
+[✉️ Invite Node](https://discord.com/oauth2/authorize?client_id=1030698369435320350) • [🆘 Support Server](https://discord.gg/E6H9VvBdTk) • [📝 Bug & Request Feature](https://github.com/rafisarkar0128/djs-prototype/issues)
+
+## 📊 Road Map
 
 - [x] **Basic Bot**
+- [ ] **Advanced Bot**
+- [ ] **Documentation**
 - [ ] **Moderation Bot**
-- [ ] **Chat Bot**
-- [ ] **Web based Dashboard**
-- [ ] **Website**
+- [ ] **Music Bot** _(basic version)_
+- [ ] **Web-based Dashboard**
+- [ ] **Website** _(simple)_
 
-## Features
+## 💡 Features
 
-- **Multiserver Member Logging System**
+1. **Advanced Logger**
+2. **Moderation Tools**
+3. **Music Streaming**
+4. **Server Management**
+5. **Custom Commands**
+6. **Web Dashboard**
 
-## Get Started
+## Get Started ( Old Guide )
 
 1. Copy `.env.example` to `.env` and fill in the values as detailed below.
 1. Create a [MongoDB](https://www.mongodb.com/) database and fill in `DATABASE_URL`.
@@ -37,16 +58,9 @@
 1. Now go to URL generator tab, in scopes select "bot", "application.commands" scroll down select "Administrator" permission copy the url and invite the bot to your server.
 1. Start using the bot. Use `/ping` or `/botinfo` commands.
 
-## Customization
 
-1. You can change embed message `colour`.
-1. Add or Remove ids of `devs`.
-1. Change links of `github`, `discord server`, `images`.
 
-> **Note** : use hex colour code for the colours. (example: #FF0000 means "RED")
-
-## Commands
-
+## Commands ( Old Ones | Might not work )
 | Name       | description                                                      |
 | ---------- | ---------------------------------------------------------------- |
 | botinfo    | Replies with bot's stats in an embed message                     |
@@ -57,3 +71,32 @@
 | memberinfo | Same as serverinfo replies with information of a discord user    |
 
 Written above are some public commands of the bot.
+
+## Contributing
+
+Contributions are welcome! Please check the [issues page](https://github.com/rafisarkar0128/djs-prototype/issues) for open issues and feature requests.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+[version-shield]: https://img.shields.io/github/package-json/v/rafisarkar0128/djs-prototype
+[version-shield-link]: https://github.com/rafisarkar0128/djs-prototype
+[contributors-shield]: https://img.shields.io/github/contributors/rafisarkar0128/djs-prototype
+[contributors-url]: https://github.com/rafisarkar0128/djs-prototype/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/rafisarkar0128/djs-prototype
+[forks-url]: https://github.com/rafisarkar0128/djs-prototype/network/members
+[stars-shield]: https://img.shields.io/github/stars/rafisarkar0128/djs-prototype
+[stars-url]: https://github.com/rafisarkar0128/djs-prototype/stargazers
+[issues-shield]: https://img.shields.io/github/issues/rafisarkar0128/djs-prototype
+[issues-url]: https://github.com/rafisarkar0128/djs-prototype/issues
+1054284394791178291: https://img.shields.io/discord/1054284394791178291?logo=discord&colorB=7289DA
+
+[license-shield]: https://img.shields.io/github/license/rafisarkar0128/djs-prototype
+[license-url]: https://github.com/rafisarkar0128/djs-prototype/blob/master/LICENSE
+[codeql]: https://github.com/rafisarkar0128/djs-prototype/workflows/CodeQL/badge.svg
+[codeql-url]: https://github.com/rafisarkar0128/djs-prototype/actions?query=workflow%3ACodeQL
+[dependency-review]: https://github.com/rafisarkar0128/djs-prototype/workflows/Dependency%20Review/badge.svg
+[dependency-review-url]: https://github.com/rafisarkar0128/djs-prototype/actions?query=workflow%3A%22Dependency+Review%22
+[code-factor]: https://img.shields.io/codefactor/grade/github/rafisarkar0128/node?logo=codefactor&logoColor=%23F44A6A
+[code-factor-url]: https://www.codefactor.io/repository/github/rafisarkar0128/node
