@@ -96,8 +96,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 [license-shield]: https://img.shields.io/github/license/rafisarkar0128/djs-prototype
 [license-url]: https://github.com/rafisarkar0128/djs-prototype/blob/master/LICENSE
-[codeql]: https://github.com/rafisarkar0128/djs-prototype/workflows/CodeQL/badge.svg
-[codeql-url]: https://github.com/rafisarkar0128/djs-prototype/actions?query=workflow%3ACodeQL
+[codeql]: https://github.com/rafisarkar0128/djs-prototype/actions/workflows/codeql.yml/badge.svg
+[codeql-url]: https://github.com/rafisarkar0128/djs-prototype/actions/workflows/codeql.yml
 [dependency-review]: https://github.com/rafisarkar0128/djs-prototype/workflows/Dependency%20Review/badge.svg
 [dependency-review-url]: https://github.com/rafisarkar0128/djs-prototype/actions?query=workflow%3A%22Dependency+Review%22
 [code-factor]: https://img.shields.io/codefactor/grade/github/rafisarkar0128/node?logo=codefactor&logoColor=%23F44A6A
