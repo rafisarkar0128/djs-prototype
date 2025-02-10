@@ -66,7 +66,7 @@
 	"bugs": {
 		"url": "https://github.com/rafisarkar0128/djs-prototype/issues"
 	},
-	"homepage": "https://github.com/rafisarkar0128/djs-prototype#readme",
+	"homepage": "https://theassassin0128.github.io/Node",
 	"_moduleAliases": {
 		"@root": ".",
 		"@src": "src/",
