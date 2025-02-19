@@ -53,7 +53,7 @@ Before you get started, you need to have the following:
 ## 🚀 Get Started
 
 1. First clone the [repository](https://github.com/rafisarkar0128/djs-prototype.git) or download a stable version from [releases](https://github.com/rafisarkar0128/djs-prototype/releases)
-1. Copy `example.lavalink-nodes.json` to `lavalink-nodes.json`
+1. Copy `example.lavalink-nodes.js` to `lavalink-nodes.js`
 
    - Host your own local lavalink node or provide one.
    - For help head to https://lavalink.dev
