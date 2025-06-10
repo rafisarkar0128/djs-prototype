@@ -112,14 +112,14 @@ pnpm run devShard # if you want to run in dev mode
 > There will be a dedicated markdown file for commands in future.
 > For now here are some public commands of the bot.
 
-| Name     | Description                                    |
-| -------- | ---------------------------------------------- |
-| ping     | 🏓 Pong! Replies with bot's response time.     |
-| botinfo  | 📖 View bot's information.                     |
-| invite   | returns a link button with bot's invite URL.   |
-| language | 🌐 Change your language for the bot.           |
+| Name     | Description                                     |
+| -------- | ----------------------------------------------- |
+| ping     | 🏓 Pong! Replies with bot's response time.      |
+| botinfo  | 📖 View bot's information.                      |
+| invite   | returns a link button with bot's invite URL.    |
+| language | 🌐 Change your language for the bot.            |
 | play     | ▶ Play songs or tracks from available sources. |
-| purge    | 🧹 Delete bulk amount of messages.             |
+| purge    | 🧹 Delete bulk amount of messages.              |
 
 ## 🤝 Contributing
 
