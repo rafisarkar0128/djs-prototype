@@ -1,134 +1,154 @@
+const BaseCommand = require("@structures/BaseCommand.js");
 const {
-  Client,
-  ChatInputCommandInteraction,
-  PermissionFlagsBits,
   SlashCommandBuilder,
+  InteractionContextType,
+  ApplicationIntegrationType,
+  PermissionFlagsBits,
   EmbedBuilder
 } = require("discord.js");
+const { t } = require("i18next");
 const ms = require("ms");
 
-module.exports = {
-  disabled: true,
-  data: new SlashCommandBuilder()
-    .setName("timeout")
-    .setDescription("Restrict a members ability to communicate.")
-    .setDMPermission(false)
-    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-    .addUserOption((options) =>
-      options
-        .setName("target")
-        .setDescription("Select a member.")
-        .setRequired(true)
-    )
-    .addStringOption((options) =>
-      options
-        .setName("duration")
-        .setDescription("The Duration of the Tiemout")
-        .setRequired(true)
-    )
-    .addStringOption((options) =>
-      options
-        .setName("reason")
-        .setDescription("Reason for this timeout")
-        .setMaxLength(512)
-    ),
-  //devOnly: false,
-  //testOnly: false,
-  permissions: ["ModerateMembers"],
-  botPermissions: ["ModerateMembers"],
+/**
+ * A new Command extended from BaseCommand
+ * @extends {BaseCommand}
+ */
+module.exports = class Command extends BaseCommand {
+  constructor() {
+    super({
+      data: new SlashCommandBuilder()
+        .setName("timeout")
+        .setDescription(t("commands:timeout.description"))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+        .setContexts(InteractionContextType.Guild)
+        .setIntegrationTypes(ApplicationIntegrationType.GuildInstall)
+        .addUserOption((option) =>
+          option
+            .setName("target")
+            .setDescription(t("commands:timeout.options.target"))
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("duration")
+            .setDescription(t("commands:timeout.options.target"))
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("reason")
+            .setDescription(t("commands:timeout.options.target"))
+            .setRequired(false)
+        ),
+      usage: "timeout <target> <duration> [reason]",
+      examples: [
+        "timeout target:@node duration:20min reason:For No Reason",
+        "timeout target:@example 3d"
+      ],
+      category: "moderation",
+      cooldown: 15,
+      global: true,
+      guildOnly: true,
+      permissions: {
+        bot: ["ModerateMembers"],
+        user: ["ModerateMembers"]
+      }
+    });
+  }
+
   /**
-   *
-   * @param {Client} interaction
-   * @param {ChatInputCommandInteraction} client
-   * @returns
+   * Execute function for this command.
+   * @param {import("@structures/BotClient.js")} client
+   * @param {import("discord.js").ChatInputCommandInteraction} interaction
+   * @param {string} lng
+   * @returns {Promise<void>}
    */
-  execute: async (interaction, client) => {
-    const { options, guild, member, user } = interaction;
+  async execute(client, interaction, lng) {
+    await interaction.deferReply({ flags: "Ephemeral" });
 
-    const target = options.getMember("target");
-    const duration = options.getString("duration");
-    const reason = options.getString("reason") || "No reason specified.";
+    const { options, guild, member } = interaction;
+    const target = options.getMember("target", true);
+    const duration = options.getString("duration", true);
+    const reason = options.getString("reason") ?? "No reason specified.";
+    const botMember = guild.members.resolve(client.user);
 
-    const errorsArray = [];
+    const errArray = [];
+    const errEmbed = new EmbedBuilder()
+      .setColor(client.color.Wrong)
+      .setTitle(t("commands:timeout.failed", { lng }));
 
-    const errorEmbed = new EmbedBuilder()
-      .setAuthor({ name: "Could not timeout member due to" })
-      .setColor(colour.error);
-
-    if (!target)
-      return interaction.reply({
-        embeds: [
-          errorEmbed.setDescription("Member has most likely left the server.")
-        ],
-        ephemeral: true
-      });
+    if (!target) {
+      errEmbed.setDescription(t("commands:timeout.noMember", { lng }));
+      return await interaction.followUp({ embeds: [errEmbed] });
+    }
 
     if (!ms(duration) || ms(duration) > ms("28d"))
-      errorsArray.push("Time provided is invalid or over the 28d limit.");
+      errArray.push(`- ${t("commands:timeout.invalidTime", { lng })}`);
 
     if (!target.moderatable || !target.manageable)
-      errorsArray.push("Selected target is not moderatable by this bot.");
+      errArray.push(`- ${t("commands:timeout.notModeratable", { lng })}`);
 
-    if (member.roles.highest.position < target.roles.highest.position)
-      errorsArray.push("Selected target has a higher role position than you.");
+    if (member.roles.highest.position < target.roles.highest.position) {
+      errArray.push(`- ${t("commands:timeout.notHighestUserRole", { lng })}`);
+    }
 
-    if (errorsArray.length) {
-      interaction.reply({
-        embeds: [errorEmbed.setDescription(errorsArray.join("\n"))],
-        ephemeral: true
-      });
-      return;
+    if (botMember.roles.highest.position <= target.roles.highest.position) {
+      errArray.push(`- ${t("commands:timeout.notHighestBotRole", { lng })}`);
+    }
+
+    if (errArray.length > 0) {
+      errEmbed.setDescription(errArray.join("\n"));
+      return await interaction.followUp({ embeds: [errEmbed] });
     }
 
     try {
       await target.timeout(ms(duration), reason);
-    } catch (err) {
-      interaction.reply({
-        embeds: [
-          errorEmbed.setDescription(
-            "Could not timeout member due to an unknown error."
-          )
-        ],
-        ephemeral: true
-      });
-      return;
+    } catch (error) {
+      errEmbed.setDescription(
+        t("commands:timeout.error", { lng, error: error.message })
+      );
+      await interaction.followUp({ embeds: [errEmbed] });
+      throw error;
     }
 
-    const newInfractionObject = {
-      Issuer: member.id,
-      IssuerTag: user.tag,
-      Reason: reason,
-      Date: Date.now
-    };
+    // const newInfractionObject = {
+    //   Issuer: member.id,
+    //   IssuerTag: user.tag,
+    //   Reason: reason,
+    //   Date: Date.now
+    // };
 
-    let userData = await infractions.findOne({
-      Guild: guild.id,
-      User: target.id
-    });
+    // let userData = await infractions.findOne({
+    //   Guild: guild.id,
+    //   User: target.id
+    // });
 
-    if (!userData) {
-      userData = await infractions.create({
-        Guild: guild.id,
-        User: target.id,
-        Infractions: [newInfractionObject]
-      });
-    } else {
-      userData.Infractions.push(newInfractionObject) && (await userData.save());
-    }
+    // if (!userData) {
+    //   userData = await infractions.create({
+    //     Guild: guild.id,
+    //     User: target.id,
+    //     Infractions: [newInfractionObject]
+    //   });
+    // } else {
+    //   userData.Infractions.push(newInfractionObject) && (await userData.save());
+    // }
+
+    // userData.Infractions.length
 
     const sEmbed = new EmbedBuilder()
       .setAuthor({ name: "Timeout Issues", iconURL: guild.iconURL() })
-      .setColor(colour.success)
+      .setColor(client.color.Good)
       .setDescription(
-        [
-          `${target} was issued a timeout for **${ms(ms(duration), {
-            long: true
-          })}** by ${member}`,
-          `\nBringing their total infractions to **${userData.Infractions.length} points**`,
-          `\n**Reason :** ${reason}`
-        ].join("\n")
+        t("commands:timeout.timeout", {
+          lng,
+          target: `${target}`,
+          duration: ms(ms(duration), { long: true }),
+          member: `${member}`,
+          infractions: 0,
+          reason
+        })
       );
 
-    return interaction.reply({ embeds: [sEmbed] });
+    await interaction.followUp({ embeds: [sEmbed] });
   }
 };
