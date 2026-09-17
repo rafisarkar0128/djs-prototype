@@ -71,11 +71,7 @@ const types = {
     badge: figures.star,
     color: "yellow",
     label: "star"
-  }
-};
-
-// for future updates
-const futureTypes = {
+  },
   fatal: {
     badge: figures.cross,
     color: "red",
@@ -342,7 +338,7 @@ module.exports = class Logger {
    */
   _buildLog(type, ...args) {
     const signale = this._meta();
-    let msg = "";
+    let msg;
 
     if (args.length === 1 && typeof args[0] === "object" && args[0] !== null) {
       if (args[0] instanceof Error) {

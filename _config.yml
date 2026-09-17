@@ -1,13 +1,22 @@
-lsi: false
-safe: true
-source: .
-incremental: false
+title: 'djs-prototype'
+description: 'A multipurpose discord bot template'
+
+# URL configuration
+url: 'https://rafisarkar0128.github.io'
+baseurl: '/djs-prototype'
+
+# Markdown & Code Highlighting
+markdown: kramdown
 highlighter: rouge
-gist:
-  noscript: false
 kramdown:
   math_engine: mathjax
   syntax_highlighter: rouge
-remote_theme: pages-themes/cayman@v0.2.0
+
+# Theme Configuration
+remote_theme: pages-themes/hacker@v0.2.0
+
+# Plugins supported natively by GitHub Pages
 plugins:
-  - jekyll-remote-theme # add this line to the plugins list if you already have one
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-seo-tag
