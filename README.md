@@ -149,7 +149,7 @@ Working on this project taught me a lot and helped me become a better developer.
 [issues-url]: https://github.com/rafisarkar0128/djs-prototype/issues
 [support-shield]: https://img.shields.io/discord/1054284394791178291?logo=discord&colorB=7289DA&style=for-the-badge
 [support-server]: https://discord.gg/E6H9VvBdTk
-[license-shield]: https://img.shields.io/github/license/rafisarkar0128/djs-prototype?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/rafisarkar0128/djs-prototype.svg?style=for-the-badge
 [license-url]: https://github.com/rafisarkar0128/djs-prototype/blob/main/LICENSE
 [codeql]: https://img.shields.io/github/actions/workflow/status/rafisarkar0128/djs-prototype/codeql.yml?style=for-the-badge&logo=github&label=Codeql
 [codeql-url]: https://github.com/rafisarkar0128/djs-prototype/actions/workflows/codeql.yml
