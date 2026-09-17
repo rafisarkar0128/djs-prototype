@@ -1,17 +1,41 @@
-name: 'CodeQL Analysis'
+name: 'CodeQL Advanced Security Analysis'
 
 on:
   push:
     branches: ['main']
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.eslintrc*'
+      - 'eslint.config.*'
   pull_request:
     branches: ['main']
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.eslintrc*'
+      - 'eslint.config.*'
   schedule:
+    # Runs every Sunday at 00:38 UTC
     - cron: '38 0 * * 0'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+# Cancel older in-flight analysis runs if new commits are pushed to the same branch
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       security-events: write
       packages: read
@@ -24,20 +48,34 @@ jobs:
         include:
           - language: actions
             build-mode: none
+            queries: security-extended
           - language: javascript-typescript
             build-mode: none
+            # 'security-extended' adds common CWEs and quality warnings beyond critical CVEs
+            queries: +security-extended,security-and-quality
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Fetches commit parent to improve PR diff scanning
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
+          queries: ${{ matrix.queries }}
+          # Exclude vendor dependencies and generated files from being parsed
+          config: |
+            paths-ignore:
+              - '**/node_modules'
+              - '**/dist'
+              - '**/build'
+              - 'public/**'
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: '/language:${{ matrix.language }}'
+          upload: true
