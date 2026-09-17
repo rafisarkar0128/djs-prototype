@@ -1,5 +1,3 @@
-const Context = require("@root/collected/Context.js");
-
 /**
  * A function to handle AutoComplete Commands
  * @param {import("@structures/BotClient.js")} client

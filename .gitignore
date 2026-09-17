@@ -9,14 +9,16 @@ node_modules
 dist
 build
 
-# package lock files
+# package lock files (ignore npm/yarn if using pnpm)
 package-lock.json
-pnpm-lock.yaml
 yarn.lock
+bun.lock
+bun.lockb
 
-# All secrets are stored here
+# Secrets
 .env
 lavalinkNodes.js
+lavalink-nodes.js
 
 # Log files
 logs
@@ -24,7 +26,6 @@ logs
 
 # Archive, backup & dump files
 archive
-collected
 *.zip
 *.tar
 *.tar.gz

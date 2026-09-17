@@ -1,7 +1,7 @@
 {
-  "name": "node",
-  "version": "4.1.1",
-  "description": "A multipurpose discord bot.",
+  "name": "djs-prototype",
+  "version": "4.1.2",
+  "description": "A lightweight, modern multipurpose Discord bot template built with discord.js.",
   "main": "src/index.js",
   "_moduleAliases": {
     "@root": ".",
@@ -12,74 +12,68 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "node --watch src/index.js",
     "shard": "node src/shard.js",
-    "devShard": "nodemon src/shard.js",
-    "lint": "pnpx eslint --config eslint.config.js src",
-    "format": "pnpx prettier --write .",
+    "devShard": "node --watch src/shard.js",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write .",
     "clearGlobal": "node scripts/clearGlobal.js",
     "clearGuild": "node scripts/clearGuild.js",
     "fetchEmojis": "node scripts/fetchEmojis.js"
   },
   "keywords": [
     "bot",
+    "template",
+    "bot-template",
     "discord",
     "discord-bot",
+    "discord-bot-template",
     "javascript",
     "nodejs",
-    "music-bot",
-    "lavalink",
-    "music"
+    "discordjs"
   ],
   "author": "rafisarkar0128",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rafisarkar0128/Node.git"
+    "url": "git+https://github.com/rafisarkar0128/djs-prototype.git"
   },
   "bugs": {
-    "url": "https://github.com/rafisarkar0128/Node/issues"
+    "url": "https://github.com/rafisarkar0128/djs-prototype/issues"
   },
-  "homepage": "https://github.com/rafisarkar0128/Node#readme",
+  "homepage": "https://github.com/rafisarkar0128/djs-prototype#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.0.0",
-    "globals": "^17.0.0",
-    "mongodb": "^7.0.0",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.5.3",
-    "undici": "^7.10.0"
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.7",
+    "undici": "^7.29.1"
   },
   "dependencies": {
-    "chalk": "4.1.2",
+    "chalk": "^4.1.2",
     "discord-arts": "^0.7.1",
-    "discord.js": "^14.19.3",
-    "dotenv": "^17.0.0",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
     "figures": "^6.1.0",
     "genius-lyrics": "^4.4.7",
-    "glob": "^13.0.0",
-    "i18next": "^25.2.1",
-    "i18next-fs-backend": "^2.6.0",
-    "lavalink-client": "^2.5.5",
-    "lru-cache": "^11.1.0",
-    "luxon": "^3.6.1",
-    "module-alias": "^2.2.3",
-    "mongoose": "^9.0.0",
+    "glob": "^13.0.6",
+    "i18next": "^25.10.10",
+    "i18next-fs-backend": "^2.6.8",
+    "lavalink-client": "^2.11.0",
+    "lru-cache": "^11.5.2",
+    "luxon": "^3.7.2",
+    "module-alias": "^2.3.4",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.10.1",
     "ms": "^2.1.3",
     "node-system-stats": "^2.0.5",
     "readline": "^1.3.0",
     "table": "^6.9.0"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.9",
-    "utf-8-validate": "^6.0.5",
+    "bufferutil": "^4.1.0",
+    "utf-8-validate": "^6.0.6",
     "zlib-sync": "^0.1.10"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "bufferutil",
-      "utf-8-validate",
-      "zlib-sync"
-    ]
   }
 }

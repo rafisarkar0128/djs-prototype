@@ -1,12 +1,11 @@
-const BaseCommand = require("@structures/BaseCommand.js");
+const BaseCommand = require('@structures/BaseCommand.js');
 const {
   SlashCommandBuilder,
   InteractionContextType,
   ApplicationIntegrationType,
-  EmbedBuilder
-} = require("discord.js");
-const { t } = require("i18next");
-const config = require("@src/config.js");
+  EmbedBuilder,
+} = require('discord.js');
+const { t } = require('i18next');
 
 /**
  * A new Command extended from BaseCommand
@@ -16,17 +15,17 @@ module.exports = class Command extends BaseCommand {
   constructor() {
     super({
       data: new SlashCommandBuilder()
-        .setName("shuffle")
-        .setDescription(t("commands:shuffle.description"))
+        .setName('shuffle')
+        .setDescription(t('commands:shuffle.description'))
         .setContexts(InteractionContextType.Guild)
         .setIntegrationTypes(ApplicationIntegrationType.GuildInstall),
-      usage: "shuffle <number>",
-      examples: ["shuffle 100"],
-      category: "music",
+      usage: 'shuffle <number>',
+      examples: ['shuffle 100'],
+      category: 'music',
       cooldown: 5,
       global: true,
       guildOnly: true,
-      player: { voice: true, active: true }
+      player: { voice: true, active: true },
     });
   }
 
@@ -42,14 +41,12 @@ module.exports = class Command extends BaseCommand {
     const embed = new EmbedBuilder().setColor(client.color.Good);
 
     if (player.queue.tracks.length === 0) {
-      embed
-        .setColor(client.color.Wrong)
-        .setDescription(t("player:noTrack", { lng }));
-      return await interaction.reply({ embeds: [embed], flags: "Ephemeral" });
+      embed.setColor(client.color.Wrong).setDescription(t('player:noTrack', { lng }));
+      return await interaction.reply({ embeds: [embed], flags: 'Ephemeral' });
     }
 
     await player.queue.shuffle();
-    embed.setDescription(t("commands:shuffle.shuffked", { lng }));
-    await interaction.reply({ embeds: [embed], flags: "Ephemeral" });
+    embed.setDescription(t('commands:shuffle.shuffked', { lng }));
+    await interaction.reply({ embeds: [embed], flags: 'Ephemeral' });
   }
 };
