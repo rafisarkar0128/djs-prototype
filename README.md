@@ -54,7 +54,7 @@ Before you get started, you need to have the following:
 1. First clone the repository:
 
 ```bash
-git clone [https://github.com/rafisarkar0128/djs-prototype.git](https://github.com/rafisarkar0128/djs-prototype.git)
+git clone https://github.com/rafisarkar0128/djs-prototype.git
 ```
 
 2. Change to the directory:
