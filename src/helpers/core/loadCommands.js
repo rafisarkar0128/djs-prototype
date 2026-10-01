@@ -1,40 +1,40 @@
-const chalk = require("chalk");
-const { table } = require("table");
-const loadFiles = require("./loadFiles.js");
-const { Collection } = require("discord.js");
+import chalk from 'chalk';
+import { table } from 'table';
+import loadFiles from '../../utils/loadFiles.js';
+import { Collection } from 'discord.js';
 
 /**
  * A function to load command modules
- * @param {import("@structures/BotClient.js")} client
+ * @param {import("#structures/index.js").BotClient} client
  * @returns {Promise<void>}
  */
-module.exports = async function (client) {
-  const tableData = [["Command", "Status"]];
+export async function loadCommands(client) {
+  const tableData = [['Command', 'Status']];
   /**
    * Typings for table conifg.
    * @type {import("table").TableUserConfig}
    */
   const tableConfig = {
     columnDefault: {
-      alignment: "center"
+      alignment: 'center',
     },
-    border: client.utils.getTableBorder("blue"),
+    border: client.utils.getTableBorder('blue'),
     drawHorizontalLine: (lineIndex, rowCount) => {
       return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount;
     },
-    columns: [{ alignment: "left" }, { width: 6 }]
+    columns: [{ alignment: 'left' }, { width: 6 }],
   };
 
   const { Categories, Permissions } = client.resources;
   const { bot } = client.config;
-  const commandFiles = await loadFiles("src/commands", [".js"]);
+  const commandFiles = await loadFiles('src/commands', ['.js']);
 
   client.commands.clear();
   client.cooldowns.clear();
   let i = 0;
 
   for (const file of commandFiles) {
-    const filePath = `${chalk.yellow("filePath")} => ${chalk.yellow(file)}`;
+    const filePath = `${chalk.yellow('filePath')} => ${chalk.yellow(file)}`;
     try {
       const Command = require(file);
       /**
@@ -50,7 +50,7 @@ module.exports = async function (client) {
         throw new Error(`"${cmd.category}" is not a valid command category.`);
       }
 
-      if (cmd.cooldown && typeof cmd.cooldown !== "number") {
+      if (cmd.cooldown && typeof cmd.cooldown !== 'number') {
         throw new TypeError(`Command coodown must be a number.`);
       }
 
@@ -59,9 +59,7 @@ module.exports = async function (client) {
       }
 
       if (!Array.isArray(cmd.permissions.bot)) {
-        throw new TypeError(
-          `Command permissions for bot must be an array of strings.`
-        );
+        throw new TypeError(`Command permissions for bot must be an array of strings.`);
       }
 
       for (const p of cmd.permissions.bot) {
@@ -71,9 +69,7 @@ module.exports = async function (client) {
       }
 
       if (!Array.isArray(cmd.permissions.user)) {
-        throw new TypeError(
-          `Command permissions for user must be an array of strings.`
-        );
+        throw new TypeError(`Command permissions for user must be an array of strings.`);
       }
 
       for (const p of cmd.permissions.user) {
@@ -82,7 +78,7 @@ module.exports = async function (client) {
         }
       }
 
-      if (!cmd.execute || typeof cmd.execute !== "function") {
+      if (!cmd.execute || typeof cmd.execute !== 'function') {
         throw new Error(`Execute function is missing.`);
       }
 
@@ -91,11 +87,11 @@ module.exports = async function (client) {
       i++;
       client.commands.set(cmd.data.name, cmd);
       client.applicationCommands.push(cmd.data?.toJSON());
-      tableData.push([chalk.blue(cmd.name), "» 🌱 «"]);
+      tableData.push([chalk.blue(cmd.name), '» 🌱 «']);
     } catch (error) {
       client.logger.error(error);
       console.log(filePath);
-      tableData.push([chalk.red(file.split(/[\\|/]/g).pop()), "» 🔴 «"]);
+      tableData.push([chalk.red(file.split(/[\\|/]/g).pop()), '» 🔴 «']);
     }
   }
 
@@ -103,4 +99,4 @@ module.exports = async function (client) {
     console.log(table(tableData, tableConfig));
   }
   client.logger.info(`Loaded ${chalk.yellow(i)} commands successfully.`);
-};
+}

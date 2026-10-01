@@ -1,6 +1,6 @@
-const chalk = require("chalk");
-const { table } = require("table");
-const loadFiles = require("./loadFiles.js");
+const chalk = require('chalk');
+const { table } = require('table');
+const loadFiles = require('../../utils/loadFiles.js');
 
 /**
  * A function to load event files
@@ -9,27 +9,27 @@ const loadFiles = require("./loadFiles.js");
  * @example await client.loadEvents();
  */
 module.exports = async function (client) {
-  const tableData = [["Event", "Status"]];
+  const tableData = [['Event', 'Status']];
   /**
    * Typings for table conifg.
    * @type {import("table").TableUserConfig}
    */
   const tableConfig = {
     columnDefault: {
-      alignment: "center"
+      alignment: 'center',
     },
-    border: client.utils.getTableBorder("yellow"),
+    border: client.utils.getTableBorder('yellow'),
     drawHorizontalLine: (lineIndex, rowCount) => {
       return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount;
     },
-    columns: [{ alignment: "left" }, { width: 6 }]
+    columns: [{ alignment: 'left' }, { width: 6 }],
   };
   const { Events } = client.resources;
-  const files = await loadFiles("src/events", [".js"]);
+  const files = await loadFiles('src/events', ['.js']);
   let i = 0;
 
   for (const file of files) {
-    const filePath = `${chalk.yellow("filePath")} => ${chalk.yellow(file)}`;
+    const filePath = `${chalk.yellow('filePath')} => ${chalk.yellow(file)}`;
     try {
       const Event = require(file);
       /**
@@ -44,7 +44,7 @@ module.exports = async function (client) {
       if (!client.lavalink && (event.lavalink || event.node)) continue;
 
       // checking for event name and type
-      if (!event.name || typeof event.name !== "string") {
+      if (!event.name || typeof event.name !== 'string') {
         throw new TypeError(`Event name must be a string.`);
       }
 
@@ -60,14 +60,14 @@ module.exports = async function (client) {
         : event.node ? client.lavalink.nodeManager
         : client;
       const execute = (...args) => event.execute(client, ...args);
-      target[event.once ? "once" : "on"](event.name, execute);
+      target[event.once ? 'once' : 'on'](event.name, execute);
 
       i++;
-      tableData.push([chalk.yellow(event.name), "» 🌱 «"]);
+      tableData.push([chalk.yellow(event.name), '» 🌱 «']);
     } catch (error) {
       client.logger.error(error);
       console.log(filePath);
-      tableData.push([chalk.red(file.split(/[\\|/]/g).pop()), "» 🔴 «"]);
+      tableData.push([chalk.red(file.split(/[\\|/]/g).pop()), '» 🔴 «']);
     }
   }
 

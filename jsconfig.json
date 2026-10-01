@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES6",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
+    "checkJs": false,
     "paths": {
-      "@root/*": ["./*"],
-      "@src/*": ["./src/*"],
-      "@db/*": ["./src/db/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@structures/*": ["./src/structures/*"]
+      "#root/*": ["./*"],
+      "#src/*": ["./src/*"],
+      "#db/*": ["./src/db/*"],
+      "#utils/*": ["./src/utils/*"],
+      "#helpers/*": ["./src/helpers/*"],
+      "#structures/*": ["./src/structures/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", "build"]
 }

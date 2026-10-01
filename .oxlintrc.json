@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": "error"
+  },
+  "env": {
+    "node": true
+  }
+}

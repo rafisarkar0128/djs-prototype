@@ -1,143 +1,107 @@
-const { Client, Collection } = require("discord.js");
-const Logger = require("./Logger.js");
-const Utils = require("../utils/Utils.js");
-const LavalinkClient = require("./LavalinkClient.js");
-const DatabaseManager = require("../db/DatabaseManager.js");
-const { validateConfig } = require("./Validator.js");
-const Genius = require("genius-lyrics");
+import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
+import Genius from 'genius-lyrics';
 
-// import { Api } from "@top-gg/sdk";
+import { Logger } from './Logger.js';
+import { Helpers } from '#helpers/index.js';
+// import { validateConfig } from '../helpers/validator.js';
+// import Utils from '../utils/Utils.js';
+// import DatabaseManager from '#db/DatabaseManager.js';
+
+import config from '#src/config.js';
+import pkg from '#root/package.json' with { type: 'json' };
+// import color from '#src/resources/colors.js';
+// import emoji from '#src/resources/emojis.js';
+// import * as resources from '#src/resources/index.js';
+// import * as helpers from '#src/helpers/index.js';
+// import * as handlers from '#src/handlers/index.js';
 
 /**
  * The client for this bot.
  * @extends {Client}
  */
-module.exports = class BotClient extends Client {
-  /**
-   * Types for discord.js ClientOptions
-   * @param {import("discord.js").ClientOptions} options The options for the client
-   */
-  constructor(options) {
-    super(options);
+export class BotClient extends Client {
+  config = config;
+  pkg = pkg;
 
-    /**
-     * The base configuration file
-     * @type {import("@src/config.js")}
-     */
-    this.config = require("@src/config.js");
+  // color = color;
+  // emoji = emoji;
+  // resources = resources;
 
-    /**
-     * The package.json file of this project
-     * @type {import("@root/package.json")}
-     */
-    this.pkg = require("@root/package.json");
+  constructor() {
+    super({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildExpressions,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildWebhooks,
+        GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.GuildScheduledEvents,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.AutoModerationConfiguration,
+        GatewayIntentBits.AutoModerationExecution,
+      ],
+      partials: [
+        Partials.Channel,
+        Partials.GuildMember,
+        Partials.GuildScheduledEvent,
+        Partials.Message,
+        Partials.Poll,
+        Partials.PollAnswer,
+        Partials.Reaction,
+        Partials.SoundboardSound,
+        Partials.ThreadMember,
+        Partials.User,
+      ],
+      allowedMentions: {
+        parse: ['users', 'roles', 'everyone'],
+        repliedUser: false,
+      },
+      failIfNotExists: true,
+    });
 
-    /**
-     * Collection of colors for embeds
-     * @type {import("@src/resources/colors.js")}
-     */
-    this.color = require("@src/resources/colors.js");
-
-    /**
-     * Collection of emojies to use with messages
-     * @type {import("@src/resources/emojis.js")}
-     */
-    this.emoji = require("@src/resources/emojis.js");
-
-    /**
-     * Resources to use for various perposes
-     * @type {import("@src/resources")}
-     */
-    this.resources = require("@src/resources");
-
-    /**
-     * The helpers for the client
-     * @type {import("@src/helpers")}
-     */
-    this.helpers = require("@src/helpers");
-
-    /**
-     * The handlers for this bot
-     * @type {import("@src/handlers")}
-     */
-    this.handlers = require("@src/handlers");
-
-    /**
-     * A collection to store all the commands
-     * @type {Collection<string, import("./BaseCommand.js")>}
-     */
+    /** @type {Collection<string, import("./BaseCommand.js")>} */
     this.commands = new Collection();
 
-    /**
-     * A collection to store all the contextmenu commands
-     * @type {Collection<string, import("./BaseCommand.js")>}
-     */
+    /** @type {Collection<string, import("./BaseCommand.js")>} */
     this.contextMenus = new Collection();
 
-    /**
-     * An array to hold the application command data (slash, context etc.)
-     * @type {import("discord.js").ApplicationCommandData[]}
-     */
+    /** @type {import("discord.js").ApplicationCommandData[]} */
     this.applicationCommands = [];
 
-    /**
-     * A collection to store cooldown data
-     * @type {Collection<string, Collection<string, string>>}
-     */
+    /** @type {Collection<string, Collection<string, string>>} */
     this.cooldowns = new Collection();
 
-    /**
-     * The utility tools manager for the bot
-     * @type {Utils}
-     */
-    this.utils = new Utils(this);
+    this.helpers = new Helpers(this);
+    // this.handlers = handlers;
+    this.logger = new Logger({ scope: 'CLIENT', config: config.loggerConfig });
+    // this.utils = new Utils(this);
+    // this.db = new DatabaseManager(this);
+  }
 
-    /**
-     * The log manager for the bot
-     * @type {Logger}
-     */
-    this.logger = new Logger();
+  async start() {
+    try {
+      this.helpers.loadWelcome();
+      this.helpers.loadAntiCrash();
+      // validateConfig(this);
 
-    /**
-     * The database manager for the bot
-     * @type {DatabaseManager}
-     */
-    this.db = new DatabaseManager(this);
+      await this.helpers.loadLocales();
+      // await this.helpers.loadEvents(this);
+      // await this.helpers.loadCommands(this);
 
-    // Initialize Music Manager if enabled
-    if (this.config.music.enabled) {
-      /**
-       * The lavalink manager for the bot
-       * @type {LavalinkClient}
-       */
-      this.lavalink = new LavalinkClient(this);
-
-      /**
-       * The genius client to fetch lyrics
-       * @type {Genius.Client}
-       */
-      this.genius = new Genius.Client(this.config.genius.token);
+      await this.login(this.config.bot.token);
+    } catch (error) {
+      this.logger.fatal(`Error starting the bot: ${error.message}`);
+      throw error;
     }
   }
-
-  /**
-   * A function to start everything
-   * @returns {Promise<void>}
-   */
-  async start() {
-    // load necessary modules
-    this.helpers.loadWelcome(this);
-    this.helpers.antiCrash(this);
-
-    // validate the config file
-    validateConfig(this);
-
-    // load locales, events & commands
-    await this.helpers.loadLocales(this);
-    await this.helpers.loadEvents(this);
-    await this.helpers.loadCommands(this);
-
-    // Log into the client
-    this.login(this.config.bot.token);
-  }
-};
+}

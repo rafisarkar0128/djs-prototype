@@ -1,255 +1,114 @@
-const { DateTime } = require("luxon");
-const chalk = require("chalk");
-const { basename } = require("path");
+// oxlint-disable getter-return
+import chalk from 'chalk';
+import figures from 'figures';
+import { DateTime } from 'luxon';
+import { basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { format } from 'node:util';
 
-const { format } = require("util");
-const figures = require("figures").default;
 const { grey, magenta } = chalk;
 
-const defaultOptions = {
-  scope: "MAIN",
-  /**@type {keyof chalk.Chalk} */
-  fileColor: "cyanBright",
-  config: {
+const defaultOptions = Object.freeze({
+  scope: 'MAIN',
+  /** @type {keyof chalk} */
+  fileColor: 'cyanBright',
+  config: Object.freeze({
+    dateFormat: '[dd/MM/yyyy]',
+    timeFormat: '[h:mm:ss a]',
+    toFile: false,
+    logDirPath: './logs/',
+    level: 'info',
     displayDate: true,
     displayTime: true,
     displayScope: false,
     displayFile: true,
     displayBadge: false,
     displayLabel: true,
-    uppercaseLabel: true
-  }
-};
-
-const types = {
-  info: {
-    badge: figures.info,
-    // badge: "ℹ",
-    color: "blue",
-    label: "info"
-  },
-  warn: {
-    badge: figures.warning,
-    // badge: "⚠",
-    color: "yellow",
-    label: "warning"
-  },
-  error: {
-    badge: figures.cross,
-    // badge: "✖",
-    color: "red",
-    label: "error"
-  },
-  debug: {
-    badge: figures.circle,
-    // badge: "🐛",
-    color: "magenta",
-    label: "debug"
-  },
-  success: {
-    badge: figures.tick,
-    color: "green",
-    label: "success"
-  },
-  log: {
-    badge: figures.lozenge,
-    color: "white",
-    label: "log"
-  },
-  pause: {
-    badge: figures.squareSmallFilled,
-    // badge: "⏸",
-    color: "yellow",
-    label: "pause"
-  },
-  start: {
-    badge: figures.play,
-    color: "green",
-    label: "start"
-  },
-  star: {
-    badge: figures.star,
-    color: "yellow",
-    label: "star"
-  },
-  fatal: {
-    badge: figures.cross,
-    color: "red",
-    label: "fatal"
-  },
-  fav: {
-    badge: figures.heart,
-    color: "magenta",
-    label: "favorite"
-  },
-  wait: {
-    badge: figures.ellipsis,
-    color: "blue",
-    label: "waiting"
-  },
-  complete: {
-    badge: figures.checkboxOn,
-    color: "cyan",
-    label: "complete"
-  },
-  pending: {
-    badge: figures.checkboxOff,
-    color: "magenta",
-    label: "pending"
-  },
-  note: {
-    badge: figures.bullet,
-    color: "blue",
-    label: "note"
-  },
-  await: {
-    badge: figures.ellipsis,
-    color: "blue",
-    label: "awaiting"
-  },
-  watch: {
-    badge: figures.ellipsis,
-    color: "yellow",
-    label: "watching"
-  }
-};
+    uppercaseLabel: true,
+  }),
+});
 
 /**
- * Typings for the log functions of the logger
+ * @typedef {{ -readonly [K in keyof typeof defaultOptions.config]: (typeof defaultOptions.config)[K] }} LoggerConfig
+ */
+
+/**
+ * @typedef {Object} LoggerOptions
+ * @property {string} [scope] The scope shown in the log meta
+ * @property {keyof chalk} [fileColor] The chalk color of the origin filename
+ * @property {Partial<LoggerConfig>} [config] Display toggles, merged over the defaults
+ */
+
+/**
+ * Typings for the log types of the logger
  * @typedef {Object} LogType
- * @property {string} badge The emoji or the log
- * @property {keyof chalk.Chalk} color The color for the label
+ * @property {string} badge The symbol of the log
+ * @property {keyof chalk} color The color for the label
  * @property {string} label The label of the log
  */
 
+/** @type {Record<string, LogType>} */
+const types = {
+  info: { badge: figures.info, color: 'blue', label: 'info' },
+  warn: { badge: figures.warning, color: 'yellow', label: 'warning' },
+  error: { badge: figures.cross, color: 'red', label: 'error' },
+  debug: { badge: figures.circle, color: 'magenta', label: 'debug' },
+  success: { badge: figures.tick, color: 'green', label: 'success' },
+  log: { badge: figures.lozenge, color: 'white', label: 'log' },
+  pause: { badge: figures.squareSmallFilled, color: 'yellow', label: 'pause' },
+  start: { badge: figures.play, color: 'green', label: 'start' },
+  star: { badge: figures.star, color: 'yellow', label: 'star' },
+  fatal: { badge: figures.cross, color: 'red', label: 'fatal' },
+  fav: { badge: figures.heart, color: 'magenta', label: 'favorite' },
+  wait: { badge: figures.ellipsis, color: 'blue', label: 'waiting' },
+  complete: { badge: figures.checkboxOn, color: 'cyan', label: 'complete' },
+  pending: { badge: figures.checkboxOff, color: 'magenta', label: 'pending' },
+  note: { badge: figures.bullet, color: 'blue', label: 'note' },
+  await: { badge: figures.ellipsis, color: 'blue', label: 'awaiting' },
+  watch: { badge: figures.ellipsis, color: 'yellow', label: 'watching' },
+};
+
+const BADGE_WIDTH = Math.max(...Object.values(types).map((t) => t.badge.length));
+const LABEL_WIDTH = Math.max(...Object.values(types).map((t) => t.label.length));
+const SCOPE_WIDTH = 8;
+const FILE_WIDTH = 20;
+
+/** Log types written to stderr instead of stdout */
+const STDERR_TYPES = new Set([types.warn, types.error, types.fatal]);
+
 /**
  * A utility class for managing client console logs.
- * @abstract
  */
-module.exports = class Logger {
+export class Logger {
   /**
-   * Typings of options for the logger.
-   * @param {typeof defaultOptions} options The options to initialize the logger with
+   * @param {LoggerOptions} [options] The options to initialize the logger with
    */
-  constructor(options = {}) {
+  constructor(options) {
+    const { scope, fileColor, config } = options ?? {};
+
     /**
      * The scope for the logger
      * @private
      * @type {string}
      */
-    this._scope = options.scope ?? defaultOptions.scope ?? "";
+    this._scope = scope ?? defaultOptions.scope;
 
     /**
      * The color of the filename for the logger
      * @private
-     * @type {string}
+     * @type {keyof chalk}
      */
-    this._fileColor = options.fileColor ?? defaultOptions.fileColor;
+    this._fileColor = fileColor ?? defaultOptions.fileColor;
 
     /**
-     * The config for the logger
+     * The display config for the logger (a private copy, defaults are never mutated)
      * @private
-     * @type {typeof defaultOptions.config}
+     * @type {LoggerConfig}
      */
-    this._config = Object.assign(defaultOptions.config, options.config);
-
-    /**
-     * The the longest badge of the logger
-     * @private
-     * @type {string}
-     */
-    this._longestBadge = this._getLongestBadge();
-
-    /**
-     * The the longest label of the logger
-     * @private
-     * @type {string}
-     */
-    this._longestLabel = this._getLongestLabel();
-  }
-
-  /**
-   * Get the longest label from the types.
-   * @private
-   * @returns {string}
-   */
-  _getLongestBadge() {
-    const badges = Object.keys(types).map((x) => types[x].badge);
-    return badges.reduce((x, y) => (x.length > y.length ? x : y));
-  }
-
-  /**
-   * Get the longest label from the types.
-   * @private
-   * @returns {string}
-   */
-  _getLongestLabel() {
-    const labels = Object.keys(types).map((x) => types[x].label);
-    return labels.reduce((x, y) => (x.length > y.length ? x : y));
-  }
-
-  /**
-   * A function to pad start of strings with spaces.
-   * @private
-   * @param {string|any} str
-   * @param {number} targetLength
-   * @returns {string}
-   */
-  _padStart(str, targetLength) {
-    str = String(str);
-    targetLength = parseInt(targetLength, 10) || 0;
-
-    if (str.length >= targetLength) {
-      return str;
+    this._config = { ...defaultOptions.config };
+    for (const [key, value] of Object.entries(config ?? {})) {
+      if (value != null) this._config[key] = value;
     }
-    if (String.prototype.padStart) {
-      return str.padStart(targetLength);
-    }
-
-    targetLength -= str.length;
-    return " ".repeat(targetLength) + str;
-  }
-
-  /**
-   * A function to pad end of strings with spaces.
-   * @private
-   * @param {string|any} str
-   * @param {number} targetLength
-   * @returns {string}
-   */
-  _padEnd(str, targetLength) {
-    str = String(str);
-    targetLength = parseInt(targetLength, 10) || 0;
-
-    if (str.length >= targetLength) {
-      return str;
-    }
-    if (String.prototype.padEnd) {
-      return str.padEnd(targetLength);
-    }
-
-    targetLength -= str.length;
-    return str + " ".repeat(targetLength);
-  }
-
-  /**
-   * Arrayify a string.
-   * @private
-   * @param {string|string[]|any} x
-   * @returns {string[]}
-   */
-  _arrayify(x) {
-    return Array.isArray(x) ? x : [x];
-  }
-
-  /**
-   * A function to format anythng to string
-   * @private
-   * @param {any} str
-   * @returns {string}
-   */
-  _formatMessage(str) {
-    return format(...this._arrayify(str));
   }
 
   /**
@@ -258,7 +117,7 @@ module.exports = class Logger {
    * @returns {string}
    */
   get _date() {
-    return grey(DateTime.now().toFormat("[dd/MM/yyyy]"));
+    return grey(DateTime.now().toFormat(this._config.dateFormat));
   }
 
   /**
@@ -267,7 +126,7 @@ module.exports = class Logger {
    * @returns {string}
    */
   get _time() {
-    return grey(DateTime.now().toFormat("[h:mm:ss a]"));
+    return grey(DateTime.now().toFormat(this._config.timeFormat));
   }
 
   /**
@@ -276,188 +135,162 @@ module.exports = class Logger {
    * @returns {string}
    */
   get _scopeName() {
-    return grey(`[${magenta(this._padEnd(this._scope, 7))}]`);
+    return grey(`[${magenta(this._scope.padEnd(SCOPE_WIDTH))}]`);
   }
 
   /**
-   * Get the origin of the log.
+   * Get the origin (file name) of the log.
    * @private
    * @returns {string}
    */
   get _filename() {
-    const _ = Error.prepareStackTrace;
-    Error.prepareStackTrace = (error, stack) => stack;
-    const { stack } = new Error();
-    Error.prepareStackTrace = _;
+    const original = Error.prepareStackTrace;
+    let callers;
+    try {
+      Error.prepareStackTrace = (_, stack) => stack;
+      // `.stack` is formatted lazily, so it must be read while the override is active
+      callers = new Error().stack.map((frame) => frame.getFileName());
+    } finally {
+      Error.prepareStackTrace = original;
+    }
 
-    const callers = stack.map((x) => x.getFileName());
-    const FilePath = callers.find((x) => x !== callers[0]);
-    let file = FilePath ? basename(FilePath) : "anonymous";
-    file = file.length > 20 ? file.substring(0, 17) + "..." : file;
+    // first frame outside this file is the real caller
+    const path = callers.find((f) => f && f !== callers[0]);
+    let file = 'anonymous';
+    if (path) {
+      file = basename(path.startsWith('file:') ? fileURLToPath(path) : path);
+    }
+    if (file.length > FILE_WIDTH) file = `${file.slice(0, FILE_WIDTH - 3)}...`;
 
-    return grey(`[${chalk[this._fileColor](this._padEnd(file, 20))}]`);
+    return grey(`[${chalk[this._fileColor](file.padEnd(FILE_WIDTH))}]`);
   }
 
   /**
-   * A function to get meta data of the log
+   * Build the meta (date, time, scope, file) parts of a log.
    * @private
    * @returns {string[]}
    */
   _meta() {
     const meta = [];
 
-    if (this._config.displayDate) {
-      meta.push(this._date);
-    }
-
-    if (this._config.displayTime) {
-      meta.push(this._time);
-    }
-
-    if (this._config.displayScope) {
-      meta.push(this._scopeName);
-    }
-
-    if (this._config.displayFile) {
-      meta.push(this._filename);
-    }
-
-    if (meta.length > 0) {
-      meta.push(grey(figures.pointer));
-    }
+    if (this._config.displayDate) meta.push(this._date);
+    if (this._config.displayTime) meta.push(this._time);
+    if (this._config.displayScope) meta.push(this._scopeName);
+    if (this._config.displayFile) meta.push(this._filename);
+    if (meta.length > 0) meta.push(grey(figures.pointer));
 
     return meta;
   }
 
   /**
-   * A function to build the log message
+   * Build the full log line.
    * @private
    * @param {LogType} type
-   * @param {...any} args
+   * @param {any[]} args
    * @returns {string}
    */
-  _buildLog(type, ...args) {
-    const signale = this._meta();
-    let msg;
-
-    if (args.length === 1 && typeof args[0] === "object" && args[0] !== null) {
-      if (args[0] instanceof Error) {
-        msg = args[0];
-      } else {
-        msg = this._formatMessage(args);
-      }
-    } else {
-      msg = this._formatMessage(args);
-    }
+  _buildLog(type, args) {
+    const parts = this._meta();
 
     if (this._config.displayBadge) {
-      signale.push(
-        chalk[type.color](
-          this._padEnd(type.badge, this._longestBadge.length + 1)
-        )
-      );
+      parts.push(chalk[type.color](type.badge.padEnd(BADGE_WIDTH + 1)));
     }
 
     if (this._config.displayLabel) {
-      signale.push(
-        chalk[type.color](
-          this._padEnd(
-            this._config.uppercaseLabel ? type.label.toUpperCase() : type.label,
-            this._longestLabel.length + 1
-          )
-        )
-      );
+      const label = this._config.uppercaseLabel ? type.label.toUpperCase() : type.label;
+      parts.push(chalk[type.color](label.padEnd(LABEL_WIDTH + 1)));
     }
 
-    if (msg instanceof Error && msg.stack) {
-      const [name, ...rest] = msg.stack.split("\n");
-      signale.push(name);
-      signale.push(grey(rest.map((l) => l.replace(/^/, "\n")).join("")));
+    const [first] = args;
+    if (args.length === 1 && first instanceof Error && first.stack) {
+      const [head, ...rest] = first.stack.split('\n');
+      parts.push(head);
+      if (rest.length > 0) parts.push(grey(`\n${rest.join('\n')}`));
     } else {
-      signale.push(msg);
+      parts.push(format(...args));
     }
 
-    return signale.join(" ");
+    return parts.join(' ');
   }
 
   /**
-   * For logging information type messages
-   * @param {String} content - can be modified with colors
+   * Build and print a log line.
+   * @private
+   * @param {LogType} type
+   * @param {any[]} args
    * @returns {void}
    */
+  _write(type, args) {
+    const line = this._buildLog(type, args);
+    if (STDERR_TYPES.has(type)) console.error(line);
+    else console.log(line);
+  }
+
   info(...content) {
-    console.log(this._buildLog(types.info, ...content));
+    this._write(types.info, content);
   }
 
-  /**
-   * For logging warning type messages
-   * @param {string|string[]|any} content - defaults to yellow but can be modified with colors
-   * @returns {void}
-   */
   warn(...content) {
-    console.log(this._buildLog(types.warn, ...content));
+    this._write(types.warn, content);
   }
 
-  /**
-   * For logging error type messages
-   * @param {Error|string} content - defaults to red but can be modified with colors
-   * @return {void}
-   */
   error(...content) {
-    console.log(this._buildLog(types.error, ...content));
+    this._write(types.error, content);
   }
 
-  /**
-   * For logging debug type messages
-   * @param {string|string[]|any} content - defaults to green but can be modified with colors
-   * @return {void}
-   */
   debug(...content) {
-    console.log(this._buildLog(types.debug, ...content));
+    this._write(types.debug, content);
   }
 
-  /**
-   * For logging success type messages to test if the code is working as expected
-   * @param {string|string[]|any} content - Can be modified with colors
-   * @return {void}
-   */
   success(...content) {
-    console.log(this._buildLog(types.success, ...content));
+    this._write(types.success, content);
   }
 
-  /**
-   * For logging anything
-   * @param {string|string[]|any} content - Can be modified with colors
-   * @return {void}
-   */
   log(...content) {
-    console.log(this._buildLog(types.log, ...content));
+    this._write(types.log, content);
   }
 
-  /**
-   * For logging pause type messages
-   * @param {string|string[]|any} content - Can be modified with colors
-   * @return {void}
-   */
   pause(...content) {
-    console.log(this._buildLog(types.pause, ...content));
+    this._write(types.pause, content);
   }
 
-  /**
-   * For logging start type messages
-   * @param {string|string[]|any} content - Can be modified with colors
-   * @return {void}
-   */
   start(...content) {
-    console.log(this._buildLog(types.start, ...content));
+    this._write(types.start, content);
   }
 
-  /**
-   * For logging star (special) type messages
-   * @param {string|string[]|any} content - Can be modified with colors
-   * @return {void}
-   */
   star(...content) {
-    console.log(this._buildLog(types.star, ...content));
+    this._write(types.star, content);
   }
-};
+
+  fatal(...content) {
+    this._write(types.fatal, content);
+  }
+
+  fav(...content) {
+    this._write(types.fav, content);
+  }
+
+  wait(...content) {
+    this._write(types.wait, content);
+  }
+
+  complete(...content) {
+    this._write(types.complete, content);
+  }
+
+  pending(...content) {
+    this._write(types.pending, content);
+  }
+
+  note(...content) {
+    this._write(types.note, content);
+  }
+
+  await(...content) {
+    this._write(types.await, content);
+  }
+
+  watch(...content) {
+    this._write(types.watch, content);
+  }
+}

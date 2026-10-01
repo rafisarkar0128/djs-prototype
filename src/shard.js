@@ -1,35 +1,29 @@
-require("dotenv").config(); // Load environment variables from .env file
-require("module-alias/register"); // Register module aliases
+import 'dotenv/config'; // Load environment variables from .env file
+import 'module-alias/register'; // Register module aliases
 
-const { ShardingManager } = require("discord.js");
-const Logger = require("@structures/Logger.js");
+import { ShardingManager } from 'discord.js';
+import Logger from '#structures/Logger.js';
 const logger = new Logger();
-const chalk = require("chalk");
+import chalk from 'chalk';
 
-const manager = new ShardingManager("./src/index.js", {
+const manager = new ShardingManager('./src/index.js', {
   respawn: true,
   token: process.env.DISCORD_CLIENT_TOKEN,
-  totalShards: "auto",
-  shardList: "auto"
+  totalShards: 'auto',
+  shardList: 'auto',
 });
 
-manager.on("shardCreate", (shard) => {
-  shard.on("ready", () => {
-    logger.info(
-      `Shard ${chalk.cyan(shard.id)} connected to Discord's Gateway.`
-    );
+manager.on('shardCreate', (shard) => {
+  shard.on('ready', () => {
+    logger.info(`Shard ${chalk.cyan(shard.id)} connected to Discord's Gateway.`);
   });
 
-  shard.on("disconnect", () => {
-    logger.warn(
-      `Shard ${chalk.cyan(shard.id)} disconnected from Discord's Gateway.`
-    );
+  shard.on('disconnect', () => {
+    logger.warn(`Shard ${chalk.cyan(shard.id)} disconnected from Discord's Gateway.`);
   });
 
-  shard.on("error", (error) => {
-    logger.error(
-      `Shard ${chalk.cyan(shard.id)} encountered an error: ${error.message}`
-    );
+  shard.on('error', (error) => {
+    logger.error(`Shard ${chalk.cyan(shard.id)} encountered an error: ${error.message}`);
   });
 });
 
