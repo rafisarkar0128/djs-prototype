@@ -17,8 +17,6 @@ bun.lockb
 
 # Secrets
 .env
-lavalinkNodes.js
-lavalink-nodes.js
 
 # Log files
 logs

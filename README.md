@@ -1,6 +1,6 @@
-# 🚀 djs-prototype - Multipurpose Discord Bot Template
+# 🚀 Djs-Prototype - Enterprise Discord Bot Template
 
-**djs-prototype** is a multipurpose Discord bot and template repository built with [discord.js](https://github.com/discordjs/discord.js), a powerful [Node.js](https://nodejs.org) module that allows you to easily interact with the [Discord API](https://discord.com/developers/docs/intro).
+**Djs-Prototype** is an enterprise-grade, modular Discord bot template built with [discord.js](https://github.com/discordjs/discord.js). It is designed with a strict Domain-Driven Design (DDD) architecture, providing a robust foundation for building highly scalable, decoupled, and maintainable bots.
 
 ## 🧪 Project Status
 
@@ -9,44 +9,30 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![Support Server][support-shield]][support-server]
 [![MIT License][license-shield]][license-url]
 [![CodeQL][codeql]][codeql-url]
 [![Dependency Review][dependency-review]][dependency-review-url]
 [![CodeFactor][code-factor]][code-factor-url]
 [![Last Commit][commit-shield]][commit-url]
 
-## 📊 Project Snapshot
+## 🏷 Architectural Features
 
-- [x] **Basic Bot**
-- [x] **Music Bot**
-- [x] **Moderation Bot**
-- [x] **Information Bot**
-- [ ] **Website** (cancelled)
-- [ ] **Dashboard** (cancelled)
-- [ ] **Documentation** (cancelled)
+This template isn’t just a collection of files; it’s a framework designed around modern software engineering principles:
 
-## 💡 Features
-
-- **Advanced Logger**
-- **Moderation Tools**
-- **Music Streaming**
-- **Server Management**
-- **Highly Customizable**
-- **Multi-Language Support**
-- **Custom Scripts**
-- **Advanced Error Handler**
-- **Predefined Types**
-- **Basic Sharding**
-- **Advanced Validation**
-- **Templates for Events, Commands & Contexts**
+- **Domain-Driven Design (DDD):** Strict separation of concerns between Domain entities, Application services, Infrastructure adapters, and Presentation routers.
+- **Inversion of Control (IoC) Container:** A built-in dependency injection system (`client.getService()`) to manage repositories, domain services, and external clients cleanly.
+- **SLF4J-Style Logger:** A highly customizable, scoped logging system with dynamic stack-tracing, file output, and severity filtering.
+- **ESM & NodeNext:** Fully converted to ES2024 standard using Native ESM and subpath imports (e.g., `#core/*`, `#modules/*`) for clean dependency resolution.
+- **Inbound & Outbound Adapters:** Discord events are treated as infrastructure adapters, keeping your core business logic entirely decoupled from the discord.js gateway.
+- **Advanced Error Handling:** Global AntiCrash boundaries and graceful shutdown lifecycles.
+- **Plugin Ecosystem Ready:** (In Development) Built to support modular, drop-in plugins for features like Music, Moderation, and Utility.
+- **Templates:** Clean, strongly-typed object templates for Events, Slash Commands, and Context Menus.
 
 ## 🔧 Requirements
 
 Before you get started, you need to have the following:
 
-- [![Node.JS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/en/download/) (Recommend LTS or Higher)
-- [![Lavalink](https://img.shields.io/badge/Lavalink-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://github.com/lavalink-devs/lavalink) (V4 or Higher)
+- [![Node.JS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/en/download/) (Recommend LTS v22 or Higher)
 - [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/try/download/community) (Required for MongoDB database)
 
 ## 🚀 Get Started
@@ -65,62 +51,91 @@ cd djs-prototype
 
 3. Install the required packages:
 
+> [!NOTE]
+> I recommend using [pnpm](https://pnpm.io/) for package management. If you want to use npm, you can replace `pnpm` with `npm` in the following commands below.
+
 ```bash
-npm install
+pnpm install
 ```
 
-4. Copy `example.lavalinkNodes.js` to `lavalinkNodes.js`
+4. Copy `.env.example` to `.env` and fill in all the required values. 5. Now go to [Discord Developer Page](https://discord.com/developers/applications), select your application or create a new one if you don't have one. Then, head to the OAuth2 tab. In the OAuth2 URL Generator, select the "bot" and "application.commands" scopes, scroll down to select "Administrator" permission, copy the URL, open the URL, and invite the bot to your server. 6. Start the bot:
+
+```bash
+pnpm start
+pnpm run dev # if you want to run in dev mode
+```
+
+5. Now you can start using the bot. Use the `/ping` or `/botinfo` command.
 
 > [!IMPORTANT]
-> If you are using external nodes then add them. For locally hosted node make sure the host, port, and password are correct.
+> By default, the bot loads slash commands to a single server. To load slash commands globally, in your `.env` file, change the value of `GLOBAL_COMMANDS` to `true`. This will make sure that the slash commands are available in every server the bot has access to.
 
-5. Copy `.env.example` to `.env` and fill in all the required values.
-6. Now go to [Discord Developer Page](https://discord.com/developers/applications), select your application or create a new one if you don't have one. Then, head to the OAuth2 tab. In the OAuth2 URL Generator, select the "bot" and "application.commands" scopes, scroll down to select "Administrator" permission, copy the URL, open the URL, and invite the bot to your server.
-7. Start the bot:
-
-```bash
-npm start
-npm run dev # if you want to run in dev mode
-```
-
-8. Now you can start using the bot. Use the `/ping` or `/botinfo` command.
-
-> [!NOTE]
-> By default, the bot loads slash commands to a single server. To load slash commands globally, go to `src/config.js`, in `bot` object, change the value of `global` to `true`. This will make sure that the slash commands are available in every server the bot has access to.
-
-## 🗝️ Sharding
+## 🗑️ Sharding
 
 **Sharding** is not recommended for bots that are in less than **2,000 servers**. By default the bot runs without sharding. To enable sharding, start the bot like this:
 
 ```bash
-npm run shard
-npm run devShard # if you want to run in dev mode
+pnpm run shard
+pnpm run devShard # if you want to run in dev mode
 ```
 
-## 📜 Commands
+## 🏗 Project Structure
 
-Here are examples of some of the commands that are available in the bot:
+This template follows a strict Domain-Driven Design (DDD) layering. The codebase is divided into the Core Kernel, Bounded Contexts (Modules), and Infrastructure Adapters.
 
-| Name     | Description                                    |
-| -------- | ---------------------------------------------- |
-| ping     | 🏓 Pong! Replies with bot's response time.     |
-| botinfo  | 📖 View bot's information.                     |
-| invite   | Returns a link button with bot's invite URL.   |
-| language | 🌐 Change your language for the bot.           |
-| play     | ▶ Play songs or tracks from available sources. |
-| purge    | 🧹 Delete bulk amount of messages.             |
+```text
+src/
+├── app/                                    # Application Bootstrapping & Lifecycle
+│   ├── config/                             # Merged config & env parser
+│   ├── loaders/                            # System bootstrapping (OS Init)
+│   ├── services/                           # Core Application Services
+│   └── bot.js                              # Bot process entrypoint
+│
+├── core/                                   # Shared Cross-Cutting Kernel
+│   ├── client/                             # IoC Container (BotClient)
+│   ├── logger/                             # SLF4J-style unified logger
+│   ├── constants/                          # Static system constants
+│   ├── i18n/                               # Localization domain
+│   └── utils/                              # Pure stateless utilities
+│
+├── modules/                                # Bounded Contexts (Domains)
+│   ├── guild/                              # Guild & System Settings
+│   │   ├── domain/                         # Pure Domain Models (No DB knowledge)
+│   │   ├── application/                    # Use Cases & Services
+│   │   └── presentation/                   # Commands & Events
+│   ├── moderation/                         # Bans, Kicks, Timeouts
+│   └── user/                               # User Accounts
+│
+├── infrastructure/                         # Outbound Infrastructure Layer
+│   ├── cache/                              # In-memory adapters (Cooldowns)
+│   ├── database/                           # Persistence (MongoDB Client & Repos)
+│   └── discord/                            # Discord API Clients, Sync, & Types
+│
+└── presentation/                           # Gateway / Router Layer
+    ├── dispatchers/                        # Interaction & Message Routers
+    └── context-menus/                      # Context Menu Adapters
+```
+
+## 🜐 Core Commands
+
+Here are examples of some of the core commands that are available out-of-the-box:
+
+| Name     | Description                                |
+| -------- | ------------------------------------------ |
+| ping     | 🏓 Pong! Replies with bot's response time. |
+| botinfo  | 📖 View bot's information.                 |
+| language | 🌐 Change your language for the bot.       |
+| invite   | 📨 Invite the bot to your server.          |
 
 ## 🤝 Contributing
 
-This project was previously in an inactive state and is undergoing active maintenance and architectural updates. Before full active community workflows resume, this repository is not accepting external pull requests, feature requests, or issue reports.
+This project is undergoing active maintenance and architectural updates. Before full active community workflows resume, this repository is not accepting external pull requests, feature requests, or issue reports.
 
-If you want to modify or improve this bot, you are welcome to fork this repository and maintain your own version.
-
-Thank you to everyone who contributed and supported this project.
+If you want to modify or improve this bot template, you are welcome to fork this repository and maintain your own version.
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/rafisarkar0128/djs-prototype/blob/main/LICENSE) file for details.
 
 ## 👥 Contributors
 
@@ -128,15 +143,14 @@ Thanks go to these wonderful people for their contributions:
 
 ## 🙏 Appreciation & Thanks
 
-This project has been a meaningful part of my coding journey. While active feature development had paused, it is resuming as a dedicated template repository for anyone who wants to bootstrap their own Discord bot using Node.js and discord.js.
+This project has been a meaningful part of my coding journey. While active feature development had paused, it is resuming as a dedicated enterprise template repository for anyone who wants to bootstrap their own discord bot using Node.js and discord.js.
 
 Thank you to everyone who supported this project, contributed ideas, tested features, and helped it grow.
 
-I am especially thankful to the open-source ecosystem, including tools and communities around Node.js, discord.js, Lavalink, MongoDB, and many other resources that helped me learn, improve, and build with confidence.
+I am especially thankful to the open-source ecosystem, including tools and communities around Node.js, discord.js, MongoDB, and many other resources that helped me learn, improve, and build with confidence.
 
 Working on this project taught me a lot and helped me become a better developer. Thank you for being part of that journey.
 
-[bot-invite]: https://discord.com/oauth2/authorize?client_id=1030698369435320350
 [version-shield]: https://img.shields.io/github/package-json/v/rafisarkar0128/djs-prototype?style=for-the-badge
 [version-shield-link]: https://github.com/rafisarkar0128/djs-prototype
 [contributors-shield]: https://img.shields.io/github/contributors/rafisarkar0128/djs-prototype?style=for-the-badge
@@ -147,8 +161,6 @@ Working on this project taught me a lot and helped me become a better developer.
 [stars-url]: https://github.com/rafisarkar0128/djs-prototype/stargazers
 [issues-shield]: https://img.shields.io/github/issues/rafisarkar0128/djs-prototype?style=for-the-badge
 [issues-url]: https://github.com/rafisarkar0128/djs-prototype/issues
-[support-shield]: https://img.shields.io/discord/1054284394791178291?logo=discord&colorB=7289DA&style=for-the-badge
-[support-server]: https://discord.gg/E6H9VvBdTk
 [license-shield]: https://img.shields.io/github/license/rafisarkar0128/djs-prototype.svg?style=for-the-badge
 [license-url]: https://github.com/rafisarkar0128/djs-prototype/blob/main/LICENSE
 [codeql]: https://img.shields.io/github/actions/workflow/status/rafisarkar0128/djs-prototype/codeql.yml?style=for-the-badge&logo=github&label=Codeql
