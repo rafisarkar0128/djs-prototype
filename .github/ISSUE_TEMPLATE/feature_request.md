@@ -1,19 +1,35 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ""
-labels: ""
-assignees: ""
+about: Suggest an improvement for the Discord bot template
+title: '[Feature]: '
+labels: ''
+assignees: ''
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Problem or Use Case
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+<!-- What problem would this solve, and who would benefit from it? -->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Proposed Change
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+<!-- Describe the behavior or experience you would like to add or change. -->
+
+## Relevant Area
+
+- [ ] Commands or interactions
+- [ ] Music or Lavalink
+- [ ] Moderation
+- [ ] Database or MongoDB
+- [ ] Localization
+- [ ] Sharding or performance
+- [ ] Developer tooling or templates
+- [ ] Documentation
+- [ ] Other:
+
+## Alternatives Considered
+
+<!-- Describe alternatives or workarounds you have considered. -->
+
+## Additional Context
+
+<!-- Add examples, screenshots, links, or implementation notes. -->

@@ -1,17 +1,20 @@
-const { defineConfig } = require("eslint/config");
-const globals = require("globals");
-const js = require("@eslint/js");
+const globals = require('globals');
+const js = require('@eslint/js');
 
-module.exports = defineConfig([
-  { files: ["**/*.{js,mjs,cjs}"] },
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
-  { files: ["**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.node } },
+module.exports = [
+  js.configs.recommended,
   {
-    files: ["**/*.{js,mjs,cjs}"],
-    plugins: { js },
-    extends: ["js/recommended"]
+    files: ['**/*.{js,cjs}'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      'no-undef': 'error',
+    },
   },
-  {
-    rules: { "no-unused-vars": "off", "no-undef": "error" }
-  }
-]);
+];

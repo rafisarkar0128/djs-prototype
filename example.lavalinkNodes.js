@@ -1,9 +1,9 @@
 module.exports = [
   {
-    id: "Local Node",
-    host: "localhost",
-    port: 2333,
-    authorization: "youshallnotpass",
+    id: 'Local Node',
+    host: 'localhost',
+    port: 3712,
+    authorization: 'youshallnotpass',
     secure: false,
     retryAmount: 5,
     retryDelay: 60000,
@@ -11,6 +11,6 @@ module.exports = [
     closeOnError: true,
     heartBeatInterval: 30000,
     enablePingOnStatsCheck: true,
-    regions: [] // Voice regions for this node
-  }
+    regions: [], // Voice regions for this node
+  },
 ];
